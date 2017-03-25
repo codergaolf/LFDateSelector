@@ -37,6 +37,9 @@ static NSString *AnimateNoti = @"LFDateSelectorNote";
 //**  选择结果 */
 @property (nonatomic, strong) NSString *resultString;
 
+//**  日期格式 */
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+
 //**  白色背景的frame */
 @property (nonatomic, assign) CGRect whiteViewFrame;
 
@@ -55,7 +58,7 @@ static NSString *AnimateNoti = @"LFDateSelectorNote";
         dateSelector = [[LFDateSelector alloc]init];
     });
     
-    // 每次到这里说明又被拿出来用了, 发一个通知让view直行一下选择器滑上来的动画
+    // 每次到这里说明又被拿出来用了, 发一个通知让view执行一下选择器滑上来的动画
     [[NSNotificationCenter defaultCenter]postNotificationName:AnimateNoti object:nil];
     return dateSelector;
 }
@@ -106,11 +109,19 @@ static NSString *AnimateNoti = @"LFDateSelectorNote";
         //[riQidatePicker setDate:nowDate animated:YES];
         //属性：datePicker.date当前选中的时间 类型 NSDate
         [_datePicker addTarget:self action:@selector(dateChange:) forControlEvents: UIControlEventValueChanged];
-        NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-        [formatter setDateFormat:@"yyyy-MM-dd"];
-        self.resultString = [formatter stringFromDate:_datePicker.date];;
+        self.resultString = [self.dateFormatter stringFromDate:_datePicker.date];;
     }
     return _datePicker;
+}
+
+// 日期格式
+- (NSDateFormatter *)dateFormatter
+{
+    if (!_dateFormatter) {
+        _dateFormatter = [[NSDateFormatter alloc]init];
+        [_dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    }
+    return _dateFormatter;
 }
 
 // 选择日期
@@ -145,8 +156,8 @@ static NSString *AnimateNoti = @"LFDateSelectorNote";
     self = [super init];
     if (self) {
         self.frame = CGRectMake(0, 0, LFScreenW, LFScreenH);
-//        [self calcuteFrames];
-//        [self setupUI];
+        //        [self calcuteFrames];
+        //        [self setupUI];
     }
     return self;
 }
@@ -182,7 +193,11 @@ static NSString *AnimateNoti = @"LFDateSelectorNote";
 // 动画出现
 - (void) makeAnimateAppear
 {
-    [self.datePicker setDate:[NSDate date]];
+    
+    NSDate *currentDate = [NSDate date];
+    [self.datePicker setDate:currentDate];
+    
+    self.resultString = [self.dateFormatter stringFromDate:currentDate];
     
     [UIView animateWithDuration:kAnimateDuration animations:^{
         self.whiteBgView.frame = self.whiteViewFrame;
@@ -213,11 +228,7 @@ static NSString *AnimateNoti = @"LFDateSelectorNote";
 // 监听选择器时间
 - (void)dateChange:(UIDatePicker *)senser{
     
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-    
-    [formatter setDateFormat:@"yyyy-MM-dd"];
-    
-    self.resultString = [formatter stringFromDate:senser.date];
+    self.resultString = [self.dateFormatter stringFromDate:senser.date];
 }
 
 // 回调

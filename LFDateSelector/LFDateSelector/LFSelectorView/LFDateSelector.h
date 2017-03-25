@@ -19,7 +19,7 @@ typedef void(^DateResult)(NSString *dateString);
 //                                         ||
 //                                         ||
 //                                         ||
-//warning 这个方法里面的block实现的时候会绑定属性 |  所有在controller里面调用的时候最好是用weak修饰一下
+//warning 这个方法里面的block实现的时候会绑定属性 |  所以在controller里面调用的时候最好是用weak修饰一下
 - (void) lf_showDateSelectorInViewController:(UIViewController *)viewController
                           withResultBlock:(DateResult)block;
 
